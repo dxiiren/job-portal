@@ -1,66 +1,113 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Job Portal
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 12 job-board application: browse and filter a seeded catalog of job listings
+(search, salary range, experience level, category), sign in and apply to a job with an
+expected salary plus a PDF CV, or register as an employer to post and manage your own
+listings. Backed by SQLite, with policy-driven authorization — employers own their jobs,
+a job with applications can't be edited, and each user can apply to a job only once.
 
-## About Laravel
+> **New developer? Start with [`.docs/tldr.md`](.docs/tldr.md)** — every doc summarised on one
+> page. The full guide lives in [`.docs/`](.docs/README.md).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Prerequisites
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Tool | Version | Installed by |
+| --- | --- | --- |
+| PowerShell + winget | Windows 10/11 stock | — (the only true prerequisites) |
+| Git | any recent | `setup.ps1` (winget) |
+| PHP | 8.4 (app requires ^8.2) | `setup.ps1` (php.net zip → `%LOCALAPPDATA%\Programs\php-8.4`) |
+| Composer | 2.x | `setup.ps1` (getcomposer.org, next to PHP) |
+| Node.js + npm | LTS | `setup.ps1` (winget) — Vite asset build |
+| uv + Python | latest | `setup.ps1` — used by `.claude` tooling |
+| just | any recent | `setup.ps1` |
+| Claude Code CLI | latest | `setup.ps1` (optional, for AI-assisted dev) |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Quick start
 
-## Learning Laravel
+```powershell
+# 1. One-time machine setup (idempotent — safe to re-run)
+pwsh ./setup.ps1
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# 2. Close and reopen PowerShell so PATH updates land
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# 3. One-time app bootstrap: composer + npm deps, .env, sqlite db, migrate, build assets
+just bootstrap
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 4. Optional: seed the catalog (301 users, 20 employers, 100 jobs). DROPS existing local data.
+just fresh
 
-## Laravel Sponsors
+# 5. Start the dev server
+just start
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+The app is now at **http://127.0.0.1:8108**. Stop it with `just stop`.
+Seeded login: `akmal@gmail.com` / `password`.
 
-### Premium Partners
+## Commands
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Run `just` with no arguments to list every recipe. The ones you'll use daily:
 
-## Contributing
+| Command | What it does |
+| --- | --- |
+| `just bootstrap` | One-time app setup: deps, `.env`, sqlite db, migrations, asset build |
+| `just start` | Serve on http://127.0.0.1:8108 in a background window (runs `stop` first) |
+| `just serve` | Serve in the foreground (Ctrl+C to stop) — handy for request logs |
+| `just stop` | Stop only THIS repo's `php.exe` serve process(es) |
+| `just migrate` | Run pending migrations |
+| `just fresh` | Drop everything, re-migrate and re-seed (IRREVERSIBLE locally) |
+| `just test` | Run the test suite (`php artisan test`); pass flags: `just test --filter=X` |
+| `just lint` | Check code style with Laravel Pint (read-only) |
+| `just lint-fix` | Auto-fix code style with Laravel Pint |
+| `just claudex` | Launch Claude Code (Sonnet, all permissions) |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Troubleshooting
 
-## Code of Conduct
+### `/jobs` shows no listings
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+The database starts empty — migrations create tables but no rows. Run `just fresh` to seed
+301 users, 20 employers and 100 jobs. (`just fresh` drops existing local data first.)
 
-## Security Vulnerabilities
+### `PHP 8.4 not found at ...` when running a recipe
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+`setup.ps1` hasn't run on this machine (or was interrupted). Run `pwsh ./setup.ps1`, close
+and reopen PowerShell, then retry.
 
-## License
+### `just test` fails on `ExampleTest` out of the box
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Pre-existing: the stock `tests/Feature/ExampleTest.php` asserts `GET /` returns 200, but `/`
+is a 302 redirect to `jobs.index`. Not a setup problem. Fix it deliberately in its own
+commit (assert a redirect, or follow it) — never as a side effect of unrelated work.
+
+### Port 8108 already in use
+
+Another serve process is lingering. `just stop` kills only this repo's `php.exe`; if the
+port is held by something else, find it with `netstat -ano | findstr :8108`.
+
+More in [`.docs/06-troubleshooting/common-issues.md`](.docs/06-troubleshooting/common-issues.md).
+
+## Project layout
+
+```
+job-portal/
+  app/
+    Enums/                  # JobCategoryEnum, JobExperienceEnum
+    Http/Controllers/       # Job, JobApplication, MyJob, MyJobApplication, Employer, Auth
+    Http/Middleware/        # EmployerMiddleware (redirects non-employers off /my-jobs)
+    Http/Requests/          # JobRequest, StoreJobApplicationRequest, StoreEmployerRequest, LoginRequest
+    Models/                 # Job (offered_jobs, SoftDeletes), Employer, JobApplication, User
+    Policies/               # JobPolicy, EmployerPolicy
+    Providers/              # AppServiceProvider (registers both policies)
+    View/Components/        # Breadcrumbs, Label, RadioGroup, TextInput
+  bootstrap/, config/       # stock Laravel 12 config (cache/session/queue on database)
+  database/
+    migrations/             # users/cache/jobs (stock) + offered_jobs + job_applications + employers
+    factories/, seeders/    # Job/Employer/JobApplication/User factories, DatabaseSeeder
+  resources/
+    views/                  # job/{index,show}, my_job/*, job_application/create, my_job_application/index, employer/create, auth/login, components/
+    css/, js/               # Vite inputs (Tailwind 4 entry, Alpine.js boot)
+  routes/web.php            # public jobs index/show + auth group (applications, employer, my-jobs)
+  tests/                    # Feature + Unit example tests
+  justfile, setup.ps1       # dev recipes + one-time machine setup
+  .docs/                    # full documentation set (start at .docs/tldr.md)
+  .claude/                  # Claude Code skills, hooks, settings
+```
