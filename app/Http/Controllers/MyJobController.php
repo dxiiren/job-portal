@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Job;
 use App\Http\Requests\JobRequest;
+use App\Models\Job;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 class MyJobController extends Controller implements HasMiddleware
 {
@@ -33,7 +33,7 @@ class MyJobController extends Controller implements HasMiddleware
                     ->jobs()
                     ->with(['employer', 'jobApplications', 'jobApplications.user'])
                     ->withTrashed()
-                    ->get()
+                    ->get(),
             ]
         );
     }

@@ -2,7 +2,8 @@
 
 namespace App\Enums;
 
-enum JobCategoryEnum:string {
+enum JobCategoryEnum: string
+{
     case IT = 'IT';
     case Finance = 'Finance';
     case Sales = 'Sales';

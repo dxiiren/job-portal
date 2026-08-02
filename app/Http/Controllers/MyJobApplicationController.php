@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
 use App\Models\JobApplication;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class MyJobApplicationController extends Controller
 {
@@ -15,12 +15,12 @@ class MyJobApplicationController extends Controller
             [
                 'applications' => auth()->user()->jobApplications()
                     ->with([
-                        'job' => fn($query) => $query->withCount('jobApplications')
+                        'job' => fn ($query) => $query->withCount('jobApplications')
                             ->withAvg('jobApplications', 'expected_salary')
                             ->withTrashed(),
-                        'job.employer'
+                        'job.employer',
                     ])
-                    ->latest()->get()
+                    ->latest()->get(),
             ]
         );
     }

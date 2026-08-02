@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Job;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\User;
 use App\Models\Employer;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Job;
 use App\Models\JobApplication;
-use Illuminate\Database\Seeder;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
      * employer@gmail.com always owns "Akmal Recruitment Sdn Bhd" with jobs.
      */
     public const DEMO_SEEKER_EMAIL = 'akmal@gmail.com';
+
     public const DEMO_EMPLOYER_EMAIL = 'employer@gmail.com';
 
     public function run(): void
@@ -28,12 +29,12 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'akmal',
             'email' => self::DEMO_SEEKER_EMAIL,
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
         $demoEmployerUser = User::factory()->create([
             'name' => 'Akmal Recruiter',
             'email' => self::DEMO_EMPLOYER_EMAIL,
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
         User::factory(300)->create();
 
@@ -62,7 +63,7 @@ class DatabaseSeeder extends Seeder
     {
         for ($i = 0; $i < 20; $i++) {
             Employer::factory()->create([
-                'user_id' => $users->pop()->id
+                'user_id' => $users->pop()->id,
             ]);
         }
     }
@@ -73,7 +74,7 @@ class DatabaseSeeder extends Seeder
 
         for ($i = 0; $i < 100; $i++) {
             Job::factory()->create([
-                'employer_id' => $employers->random()->id
+                'employer_id' => $employers->random()->id,
             ]);
         }
     }
@@ -88,7 +89,7 @@ class DatabaseSeeder extends Seeder
             foreach ($jobs as $job) {
                 JobApplication::factory()->create([
                     'job_id' => $job->id,
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
                 ]);
             }
         }

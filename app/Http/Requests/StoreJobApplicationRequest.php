@@ -23,7 +23,7 @@ class StoreJobApplicationRequest extends FormRequest
     {
         return [
             'expected_salary' => 'required|numeric|min:1|max:1000000',
-            'cv' => 'required|file|mimes:pdf|max:2048'
+            'cv' => 'required|file|mimes:pdf|max:2048',
         ];
     }
 }

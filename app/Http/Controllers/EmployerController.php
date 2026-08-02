@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployerRequest;
-use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\View\View;
 
 class EmployerController extends Controller implements HasMiddleware
 {

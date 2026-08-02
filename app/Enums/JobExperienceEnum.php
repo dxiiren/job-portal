@@ -2,7 +2,8 @@
 
 namespace App\Enums;
 
-enum JobExperienceEnum: string {
+enum JobExperienceEnum: string
+{
     case Entry = 'entry';
     case Intermediate = 'intermediate';
     case Senior = 'senior';

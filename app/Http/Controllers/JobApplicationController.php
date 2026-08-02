@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Job;
-use Illuminate\View\View;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\StoreJobApplicationRequest;
+use App\Models\Job;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\View\View;
 
 class JobApplicationController extends Controller implements HasMiddleware
 {
@@ -16,7 +16,7 @@ class JobApplicationController extends Controller implements HasMiddleware
             new Middleware('can:applyJob,job', ['create', 'store']),
         ];
     }
-    
+
     public function create(Job $job): View
     {
         return view('job_application.create', ['job' => $job]);
@@ -30,7 +30,7 @@ class JobApplicationController extends Controller implements HasMiddleware
         $job->jobApplications()->create([
             'user_id' => $request->user()->id,
             'expected_salary' => $request->safe()->input('expected_salary'),
-            'cv_path' => $path
+            'cv_path' => $path,
         ]);
 
         return redirect()->route('jobs.show', $job)->with('success', 'Job application submitted.');

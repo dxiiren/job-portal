@@ -16,8 +16,7 @@ class RadioGroup extends Component
         public array $options,
         public ?bool $allOption = true,
         public ?string $value = null
-    ) {
-    }
+    ) {}
 
     public function optionsWithLabels(): array
     {

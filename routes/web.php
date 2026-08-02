@@ -9,13 +9,12 @@ use App\Http\Controllers\MyJobController;
 use App\Http\Middleware\EmployerMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => to_route('jobs.index'));
+Route::get('/', fn () => to_route('jobs.index'));
 Route::resource('jobs', JobController::class)->only(['index', 'show']);
 
 Route::resource('auth', AuthController::class)->only(['create', 'store', 'destroy']);
-Route::get('login', fn() => to_route('auth.create'))->name('login');
+Route::get('login', fn () => to_route('auth.create'))->name('login');
 Route::delete('logout', [AuthController::class, 'destroy'])->name('logout');
-
 
 Route::middleware('auth')->group(function () {
     Route::resource('job.application', JobApplicationController::class)->only(['create', 'store']);

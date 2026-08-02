@@ -4,8 +4,8 @@ namespace App\Http\Requests;
 
 use App\Enums\JobCategoryEnum;
 use App\Enums\JobExperienceEnum;
-use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class JobRequest extends FormRequest
 {

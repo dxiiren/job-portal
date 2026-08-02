@@ -14,8 +14,8 @@ class AuthController extends Controller
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        return $request->attempt() 
-            ? redirect()->intended('/') 
+        return $request->attempt()
+            ? redirect()->intended('/')
             : redirect()->back()->with('error', 'Invalid credentials');
     }
 
@@ -24,6 +24,7 @@ class AuthController extends Controller
         auth()->logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
+
         return redirect('/');
     }
 }
