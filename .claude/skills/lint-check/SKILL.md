@@ -38,14 +38,19 @@ just lint          # confirm green
 ### 2 — Test suite (PHPUnit via artisan)
 
 ```powershell
-just test          # php artisan test
+just test          # php artisan test --parallel --processes=6
 ```
 
 Pass = all tests green, exit 0. Filter a single test with
-`just test --filter=SomethingTest`. Tests run against the config in `phpunit.xml` —
-NOTE: this repo's `phpunit.xml` has the sqlite/`:memory:` DB overrides **commented
-out**, so feature tests hit the dev `database/database.sqlite`. Don't assert on
-seeded row counts, and never "fix" a failure by pointing tests at fresh dev data.
+`just test --filter=SomethingTest`. Tests run against the config in `phpunit.xml`,
+which sets `DB_CONNECTION=sqlite` and `DB_DATABASE=:memory:` — so each process
+builds its own database from the migrations and the dev
+`database/database.sqlite` is never touched (verified: its mtime and size are
+unchanged by a full run). Don't assert on seeded dev rows.
+
+`just test` runs in parallel, so its output interleaves and the summary line
+reads `OK (74 tests, 222 assertions)` rather than `Tests: 74 passed`. When a
+failure needs reading rather than counting, use `just test-serial`.
 
 ---
 
@@ -56,7 +61,7 @@ Report a per-layer table, then an overall verdict:
 ```
 LAYER   TOOL             STATUS
 style   pint --test      PASS | FAIL (N files)  [auto-fixed → re-checked green]
-test    php artisan test PASS | FAIL (N failures)
+test    artisan test -p 6  PASS | FAIL (N failures)
 OVERALL: PASS | FAIL
 ```
 
