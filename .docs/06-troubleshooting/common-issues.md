@@ -1,9 +1,9 @@
 # Common issues
 
 > **TL;DR** Real symptom → cause → fix, from actual verification runs on this repo. Check
-> here before debugging from scratch. The two "expected failures" on a clean clone are
-> `just test` (stock `ExampleTest` vs the `/` redirect) and `just lint` (pre-existing Pint
-> debt) — neither means your setup is broken.
+> here before debugging from scratch. The one "expected failure" on a clean clone is
+> `just lint` (pre-existing Pint debt) — it does not mean your setup is broken. `just test`
+> is green out of the box.
 
 ## `/jobs` shows an empty list
 
@@ -12,26 +12,9 @@
 **Cause** — `just bootstrap` migrates but does not seed; the database starts empty, and
 there is no registration UI to create a user.
 
-**Fix** — `just fresh` (seeds 301 users, 20 employers, 100 jobs, random applications; the
-known login is `akmal@gmail.com` / `password`). Note it DROPS existing local data.
-
-## `just test` fails out of the box
-
-**Symptom** —
-
-```
-FAILED  Tests\Feature\ExampleTest > the application returns a successful response
-Expected response status code [200] but received 302.
-Tests:    1 failed, 1 passed (2 assertions)
-```
-
-**Cause** — pre-existing: the stock `tests/Feature/ExampleTest.php` asserts `GET /` returns
-200, but `routes/web.php` redirects `/` to `jobs.index` (302). Not a setup problem.
-
-**Fix** — none required for onboarding. If you want green, change the assertion to
-`assertRedirect(route('jobs.index'))` in a dedicated `test:` commit — never as a side
-effect of unrelated work. Meanwhile, gate your own changes with
-`just test --filter=YourNewTest`.
+**Fix** — `just fresh` (seeds 300+ users, 21 employers, 103 jobs, random applications; the
+deterministic logins are `akmal@gmail.com` / `password` (job seeker) and
+`employer@gmail.com` / `password` (employer)). Note it DROPS existing local data.
 
 ## `just lint` fails with style violations you didn't write
 
@@ -82,14 +65,14 @@ the command line; seeing it report 2+ processes is normal, PHP's dev server runs
 
 **Symptom** — after running tests, `/jobs` is empty again.
 
-**Cause** — this repo's `phpunit.xml` has the sqlite/`:memory:` DB overrides **commented
-out**, so tests run against the dev `database/database.sqlite`. Any test using
-`RefreshDatabase` (none do today, but the import is stubbed in `ExampleTest`) will
-drop-and-remigrate your dev data.
+**Cause** — historical: `phpunit.xml` used to ship with the sqlite/`:memory:` DB overrides
+commented out, so `RefreshDatabase` tests ran against the dev `database/database.sqlite`.
+The overrides are now active — tests run on an in-memory database and cannot touch dev
+data. If this still happens, someone re-commented the two `DB_CONNECTION`/`DB_DATABASE`
+lines in `phpunit.xml`.
 
-**Fix** — re-seed with `just fresh`. Before writing tests that touch the DB, uncomment the
-two `DB_CONNECTION`/`DB_DATABASE` lines in `phpunit.xml` in a dedicated commit so tests use
-an in-memory database.
+**Fix** — re-seed with `just fresh`; restore the `phpunit.xml` overrides if they were
+removed.
 
 ## `setup.ps1` seems to hang
 

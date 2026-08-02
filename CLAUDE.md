@@ -22,13 +22,13 @@ applications can't be edited, and each user can apply to a job only once.
 | Framework | **Laravel 12** (PHP ^8.2, local PHP 8.4) | Routes in `routes/web.php`; resource controllers (`jobs`, `auth`, `job.application`, `my-job-applications`, `employer`, `my-jobs`) |
 | ORM | Eloquent | `Job` (table **`offered_jobs`**, SoftDeletes, `scopeFilter` for search/salary/experience/category), `Employer`, `JobApplication`, `User` (hasOne employer) |
 | Database | **SQLite** (`database/database.sqlite`, git-ignored) | `DB_CONNECTION=sqlite` from `.env.example`; sessions/cache/queue all in DB tables |
-| Auth | Session login (`AuthController` + `LoginRequest::attempt`) | No registration UI — users come from the seeder (`akmal@gmail.com` / `password`); logout is a `DELETE` |
+| Auth | Session login (`AuthController` + `LoginRequest::attempt`) | No registration UI — users come from the seeder (`akmal@gmail.com` / `password` seeker, `employer@gmail.com` / `password` employer); logout is a `DELETE` |
 | Authorization | Policies + middleware | `JobPolicy` / `EmployerPolicy` registered in `AppServiceProvider`; `can:` controller middleware; `EmployerMiddleware` gates `/my-jobs` |
 | Validation | FormRequest | `JobRequest` (enum-backed experience/category), `StoreJobApplicationRequest` (`cv` = `file\|mimes:pdf\|max:2048`), `StoreEmployerRequest`, `LoginRequest` |
 | Uploads | Private `local` disk | CVs stored via `store('cvs', 'local')` → `storage/app/private/cvs/` (never public) |
 | Views | Blade components | `<x-layout>` shell + `<x-job-card>`, `<x-breadcrumbs>`, `<x-text-input>`, `<x-radio-group>`, `<x-tag>`, `<x-card>` |
 | Assets | Vite 6 + Tailwind CSS 4 + Alpine.js (npm) | `@vite` loads only when `public/build/manifest.json` exists (inline fallback otherwise) — `just bootstrap` builds once |
-| Tests | PHPUnit 11 via `php artisan test` | Stock example tests only; `phpunit.xml` DB overrides are commented out, so feature tests hit the dev sqlite db |
+| Tests | PHPUnit 11 via `php artisan test` | Green feature suite (smoke, `JobPolicyTest`, `JobApplicationCvTest`, `DatabaseSeederTest`); `phpunit.xml` overrides DB to sqlite `:memory:` — tests never touch the dev db |
 | Style | Laravel Pint | `just lint` / `just lint-fix` |
 | Task runner | `just` | wraps php/composer/npm (`justfile`); PHP pinned to `%LOCALAPPDATA%\Programs\php-8.4` |
 
@@ -53,7 +53,7 @@ job-portal/
     views/                  # job/{index,show}, my_job/*, job_application/create, my_job_application/index, employer/create, auth/login, components/
     css/, js/               # Vite inputs (Tailwind 4 entry, Alpine.js boot)
   routes/web.php            # public jobs index/show + auth group (applications, employer, my-jobs)
-  tests/                    # Feature + Unit example tests
+  tests/                    # Feature tests: smoke, policies, CV validation, seeder (sqlite :memory:)
   justfile, setup.ps1       # dev recipes + one-time machine setup
   .docs/                    # numbered documentation set
   .claude/                  # skills, hooks, settings
@@ -77,14 +77,14 @@ job-portal/
   command for something a recipe already covers.
 - `just stop` kills only THIS repo's server processes (matched by repo path on the command
   line) — safe to run while other projects are serving.
-- The database starts **empty** — run `just fresh` once to seed 301 users, 20 employers,
-  100 jobs and random applications. Known login: `akmal@gmail.com` / `password`. `just fresh`
+- The database starts **empty** — run `just fresh` once to seed 300+ users, 21 employers,
+  103 jobs and random applications. Deterministic logins: `akmal@gmail.com` / `password`
+  (job seeker) and `employer@gmail.com` / `password` (employer). `just fresh`
   DROPS all local data; never run it to "fix" something without asking.
 - The `Job` model maps to the **`offered_jobs`** table — the `jobs` table is Laravel's stock
   queue table. Mind this in raw SQL and new foreign keys.
-- `just test` fails out of the box: the stock `ExampleTest` asserts `GET /` returns 200, but
-  `/` is a 302 redirect to `jobs.index`. Known issue — don't silently "fix" it inside an
-  unrelated change.
+- `just test` is green out of the box (11 tests) and runs on sqlite `:memory:` — keep it
+  green; gate every change with it.
 - Never edit committed migrations, `config/database.php`, or `.env.example` defaults.
 
 ## Project Skills

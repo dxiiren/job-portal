@@ -9,6 +9,10 @@ a job with applications can't be edited, and each user can apply to a job only o
 > **New developer? Start with [`.docs/tldr.md`](.docs/tldr.md)** — every doc summarised on one
 > page. The full guide lives in [`.docs/`](.docs/README.md).
 
+![Filterable job listing](docs/images/jobs.png)
+
+![Job detail page](docs/images/job-detail.png)
+
 ## Prerequisites
 
 | Tool | Version | Installed by |
@@ -33,7 +37,7 @@ pwsh ./setup.ps1
 # 3. One-time app bootstrap: composer + npm deps, .env, sqlite db, migrate, build assets
 just bootstrap
 
-# 4. Optional: seed the catalog (301 users, 20 employers, 100 jobs). DROPS existing local data.
+# 4. Optional: seed the catalog (300+ users, 21 employers, 103 jobs). DROPS existing local data.
 just fresh
 
 # 5. Start the dev server
@@ -41,7 +45,36 @@ just start
 ```
 
 The app is now at **http://127.0.0.1:8108**. Stop it with `just stop`.
-Seeded login: `akmal@gmail.com` / `password`.
+
+## Demo accounts
+
+`just fresh` always seeds two deterministic logins (both with password `password`):
+
+| Email | Password | Role |
+| --- | --- | --- |
+| `akmal@gmail.com` | `password` | Job seeker — no pre-seeded applications, so every job can be applied to fresh |
+| `employer@gmail.com` | `password` | Employer — owns **Akmal Recruitment Sdn Bhd** with jobs (and incoming applications) under **My Jobs** |
+
+Sign in as the job seeker to browse, filter and apply (expected salary + PDF CV); sign in
+as the employer to post, edit and review applications on your own listings.
+
+## Tests
+
+`just test` runs the PHPUnit feature suite (green — 11 tests / 32 assertions) against an
+in-memory sqlite database (`phpunit.xml` overrides `DB_CONNECTION`/`DB_DATABASE`), so the
+seeded dev database is never touched. What's covered:
+
+| Suite | Proves |
+| --- | --- |
+| `SmokeTest` | `/` redirects to the job listing, `/jobs` renders seeded jobs, guests get "Sign in to apply" (not "already applied") |
+| `JobPolicyTest` | An employer cannot edit a job once it has applications (403), cannot touch another employer's job, and a user cannot apply twice to the same job |
+| `JobApplicationCvTest` | CV uploads must be PDF and ≤ 2 MB — rejects `cv.exe` and oversized files with nothing stored; a valid PDF lands on the private `local` disk |
+| `DatabaseSeederTest` | The seeder always produces the two demo accounts above with their exact roles |
+
+```powershell
+just test                             # whole suite
+just test --filter=JobPolicyTest      # one class
+```
 
 ## Commands
 
@@ -65,18 +98,12 @@ Run `just` with no arguments to list every recipe. The ones you'll use daily:
 ### `/jobs` shows no listings
 
 The database starts empty — migrations create tables but no rows. Run `just fresh` to seed
-301 users, 20 employers and 100 jobs. (`just fresh` drops existing local data first.)
+300+ users, 21 employers and 103 jobs. (`just fresh` drops existing local data first.)
 
 ### `PHP 8.4 not found at ...` when running a recipe
 
 `setup.ps1` hasn't run on this machine (or was interrupted). Run `pwsh ./setup.ps1`, close
 and reopen PowerShell, then retry.
-
-### `just test` fails on `ExampleTest` out of the box
-
-Pre-existing: the stock `tests/Feature/ExampleTest.php` asserts `GET /` returns 200, but `/`
-is a 302 redirect to `jobs.index`. Not a setup problem. Fix it deliberately in its own
-commit (assert a redirect, or follow it) — never as a side effect of unrelated work.
 
 ### Port 8108 already in use
 
@@ -106,7 +133,7 @@ job-portal/
     views/                  # job/{index,show}, my_job/*, job_application/create, my_job_application/index, employer/create, auth/login, components/
     css/, js/               # Vite inputs (Tailwind 4 entry, Alpine.js boot)
   routes/web.php            # public jobs index/show + auth group (applications, employer, my-jobs)
-  tests/                    # Feature + Unit example tests
+  tests/                    # Feature tests: smoke, policies, CV validation, seeder (sqlite :memory:)
   justfile, setup.ps1       # dev recipes + one-time machine setup
   .docs/                    # full documentation set (start at .docs/tldr.md)
   .claude/                  # Claude Code skills, hooks, settings

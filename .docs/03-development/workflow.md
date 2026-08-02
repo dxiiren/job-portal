@@ -37,11 +37,11 @@
 - **Salary validation is length-based** — `expected_salary` (`StoreJobApplicationRequest`)
   has `min:1|max:1000000` without `numeric`, so min/max validate string LENGTH. Known quirk;
   fix deliberately, not as a drive-by.
-- **`ExampleTest` fails on a clean clone** — it asserts `GET /` is 200 but `/` is a 302
-  redirect. Don't let it mask new failures you introduce; see
-  [common-issues](../06-troubleshooting/common-issues.md).
-- **Tests hit the dev sqlite db** — `phpunit.xml`'s sqlite/`:memory:` overrides are
-  commented out. A test that migrates or truncates will eat your seeded data.
+- **The suite is green — keep it green** — `just test` runs real feature tests (smoke,
+  policies, CV validation, seeder demo accounts). A clean clone passes; a red suite means
+  your change broke something.
+- **Tests run on sqlite `:memory:`** — `phpunit.xml` overrides `DB_CONNECTION`/`DB_DATABASE`,
+  so `RefreshDatabase` tests never touch the seeded dev `database/database.sqlite`.
 - **CV files are private** — keep `store('cvs', 'local')`; anything public leaks PDFs.
 
 ## Working with Claude Code
