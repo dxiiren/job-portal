@@ -15,19 +15,46 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    /**
+     * Deterministic demo logins (both use password "password"):
+     * akmal@gmail.com is always a plain job seeker with no applications,
+     * employer@gmail.com always owns "Akmal Recruitment Sdn Bhd" with jobs.
+     */
+    public const DEMO_SEEKER_EMAIL = 'akmal@gmail.com';
+    public const DEMO_EMPLOYER_EMAIL = 'employer@gmail.com';
+
     public function run(): void
     {
         User::factory()->create([
             'name' => 'akmal',
-            'email' => 'akmal@gmail.com',
+            'email' => self::DEMO_SEEKER_EMAIL,
+            'password' => bcrypt('password')
+        ]);
+        $demoEmployerUser = User::factory()->create([
+            'name' => 'Akmal Recruiter',
+            'email' => self::DEMO_EMPLOYER_EMAIL,
             'password' => bcrypt('password')
         ]);
         User::factory(300)->create();
 
-        $users = User::all()->shuffle();
+        // Keep both demo accounts out of the random pools so their roles stay
+        // deterministic: the seeker never becomes an employer or picks up
+        // random applications, and the employer user isn't doubled up.
+        $users = User::query()
+            ->whereNotIn('email', [self::DEMO_SEEKER_EMAIL, self::DEMO_EMPLOYER_EMAIL])
+            ->get()
+            ->shuffle();
 
         $this->createEmployer($users);
+
+        $demoEmployer = Employer::factory()->create([
+            'user_id' => $demoEmployerUser->id,
+            'company_name' => 'Akmal Recruitment Sdn Bhd',
+        ]);
+
         $this->createJob();
+        Job::factory(3)->create(['employer_id' => $demoEmployer->id]);
+
         $this->createJobApplication($users);
     }
 
