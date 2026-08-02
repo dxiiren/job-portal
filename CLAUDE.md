@@ -23,12 +23,12 @@ applications can't be edited, and each user can apply to a job only once.
 | ORM | Eloquent | `Job` (table **`offered_jobs`**, SoftDeletes, `scopeFilter` for search/salary/experience/category), `Employer`, `JobApplication`, `User` (hasOne employer) |
 | Database | **SQLite** (`database/database.sqlite`, git-ignored) | `DB_CONNECTION=sqlite` from `.env.example`; sessions/cache/queue all in DB tables |
 | Auth | Session login (`AuthController` + `LoginRequest::attempt`) | No registration UI — users come from the seeder (`akmal@gmail.com` / `password` seeker, `employer@gmail.com` / `password` employer); logout is a `DELETE` |
-| Authorization | Policies + middleware | `JobPolicy` / `EmployerPolicy` registered in `AppServiceProvider`; `can:` controller middleware; `EmployerMiddleware` gates `/my-jobs` |
+| Authorization | Policies + middleware | `JobPolicy` / `EmployerPolicy` / `JobApplicationPolicy` registered in `AppServiceProvider`; `can:` controller middleware (incl. `can:delete` on both destroy actions); `EmployerMiddleware` gates `/my-jobs` |
 | Validation | FormRequest | `JobRequest` (enum-backed experience/category), `StoreJobApplicationRequest` (`cv` = `file\|mimes:pdf\|max:2048`), `StoreEmployerRequest`, `LoginRequest` |
 | Uploads | Private `local` disk | CVs stored via `store('cvs', 'local')` → `storage/app/private/cvs/` (never public) |
 | Views | Blade components | `<x-layout>` shell + `<x-job-card>`, `<x-breadcrumbs>`, `<x-text-input>`, `<x-radio-group>`, `<x-tag>`, `<x-card>` |
 | Assets | Vite 6 + Tailwind CSS 4 + Alpine.js (npm) | `@vite` loads only when `public/build/manifest.json` exists (inline fallback otherwise) — `just bootstrap` builds once |
-| Tests | PHPUnit 11 via `php artisan test` | Green feature suite (smoke, `JobPolicyTest`, `JobApplicationCvTest`, `JobApplicationSalaryValidationTest`, `DatabaseSeederTest`); `phpunit.xml` overrides DB to sqlite `:memory:` — tests never touch the dev db |
+| Tests | PHPUnit 11 via `php artisan test` | Green feature suite of 74 tests (smoke, auth, the three policies, ownership on both delete routes, soft deletes, employer middleware, `scopeFilter`, `JobRequest` validation, CV/salary validation, seeder); `phpunit.xml` overrides DB to sqlite `:memory:` — tests never touch the dev db |
 | Style | Laravel Pint | `just lint` / `just lint-fix` |
 | Task runner | `just` | wraps php/composer/npm (`justfile`); PHP pinned to `%LOCALAPPDATA%\Programs\php-8.4` |
 
@@ -42,8 +42,8 @@ job-portal/
     Http/Middleware/        # EmployerMiddleware (redirects non-employers off /my-jobs)
     Http/Requests/          # JobRequest, StoreJobApplicationRequest, StoreEmployerRequest, LoginRequest
     Models/                 # Job (offered_jobs, SoftDeletes), Employer, JobApplication, User
-    Policies/               # JobPolicy (applyJob, deny update once applications exist), EmployerPolicy
-    Providers/              # AppServiceProvider (registers both policies)
+    Policies/               # JobPolicy (applyJob, deny update once applications exist), EmployerPolicy, JobApplicationPolicy (applicant-only delete)
+    Providers/              # AppServiceProvider (registers all three policies)
     View/Components/        # Breadcrumbs, Label, RadioGroup, TextInput
   bootstrap/, config/       # stock Laravel 12 config (cache/session/queue on database)
   database/
@@ -83,7 +83,7 @@ job-portal/
   DROPS all local data; never run it to "fix" something without asking.
 - The `Job` model maps to the **`offered_jobs`** table — the `jobs` table is Laravel's stock
   queue table. Mind this in raw SQL and new foreign keys.
-- `just test` is green out of the box (15 tests) and runs on sqlite `:memory:` — keep it
+- `just test` is green out of the box (74 tests) and runs on sqlite `:memory:` — keep it
   green; gate every change with it.
 - Never edit committed migrations, `config/database.php`, or `.env.example` defaults.
 

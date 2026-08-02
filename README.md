@@ -60,14 +60,22 @@ as the employer to post, edit and review applications on your own listings.
 
 ## Tests
 
-`just test` runs the PHPUnit feature suite (green — 15 tests / 44 assertions) against an
+`just test` runs the PHPUnit feature suite (green — 74 tests / 222 assertions) against an
 in-memory sqlite database (`phpunit.xml` overrides `DB_CONNECTION`/`DB_DATABASE`), so the
 seeded dev database is never touched. What's covered:
 
 | Suite | Proves |
 | --- | --- |
-| `SmokeTest` | `/` redirects to the job listing, `/jobs` renders seeded jobs, guests get "Sign in to apply" (not "already applied") |
+| `SmokeTest` | `/` redirects to the job listing, `/jobs` renders seeded jobs, pages carry the real `Job Portal` title, guests get "Sign in to apply" (not "already applied") |
+| `AuthTest` | Login succeeds to the *intended* url, bad credentials flash `Invalid credentials`, `remember` issues a recaller cookie, logout invalidates the session and is DELETE-only |
 | `JobPolicyTest` | An employer cannot edit a job once it has applications (403), cannot touch another employer's job, and a user cannot apply twice to the same job |
+| `MyJobApplicationAuthorizationTest` | Only the applicant may withdraw their own application — another user (and even the hiring employer) gets 403 and the row survives |
+| `MyJobDeleteAuthorizationTest` | An employer cannot delete another employer's job; deleting their own soft-deletes it |
+| `JobSoftDeleteTest` | A soft-deleted job leaves `/jobs` and 404s on its detail page, but still shows under `/my-jobs` and in the applicant's list; `restore`/`forceDelete` stay owner-only |
+| `EmployerMiddlewareTest` | Guests and non-employers are bounced off `/my-jobs` with the registration flash; employers pass through |
+| `EmployerPolicyTest` | One employer profile per user; `company_name` is required, unique and ≥ 3 characters |
+| `JobFilterTest` | `Job::scopeFilter` searches title/description/**employer company name**, salary boundaries are inclusive, experience/category are exact, and filters survive pagination |
+| `JobRequestValidationTest` | `JobRequest` on both store and update — the 5,000 salary floor, enum-only experience/category, the 255-character title cap |
 | `JobApplicationCvTest` | CV uploads must be PDF and ≤ 2 MB — rejects `cv.exe` and oversized files with nothing stored; a valid PDF lands on the private `local` disk |
 | `JobApplicationSalaryValidationTest` | `expected_salary` is validated as a **value** (`numeric`, 1..1,000,000) — rejects `abc`, `0` and absurd amounts; in-range salaries save |
 | `DatabaseSeederTest` | The seeder always produces the two demo accounts above with their exact roles |

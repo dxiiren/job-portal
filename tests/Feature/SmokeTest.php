@@ -28,6 +28,26 @@ class SmokeTest extends TestCase
             ->assertSee($job->title);
     }
 
+    public function test_pages_carry_the_real_product_name_as_their_title(): void
+    {
+        // The layout shell used to ship the stock <title>Laravel</title>.
+        $this->get(route('jobs.index'))
+            ->assertOk()
+            ->assertSee('<title>Job Portal</title>', false)
+            ->assertDontSee('<title>Laravel</title>', false);
+    }
+
+    public function test_the_signed_in_nav_uses_a_plain_my_applications_label(): void
+    {
+        // The label used to interpolate the user's name and fall back to a
+        // misspelled "Anynomus" for a nameless account.
+        $this->actingAs(User::factory()->create())
+            ->get(route('jobs.index'))
+            ->assertOk()
+            ->assertSee('My Applications')
+            ->assertDontSee('Anynomus');
+    }
+
     public function test_a_guest_is_invited_to_sign_in_instead_of_told_they_already_applied(): void
     {
         $job = Job::factory()

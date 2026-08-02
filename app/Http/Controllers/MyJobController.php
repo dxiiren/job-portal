@@ -17,6 +17,7 @@ class MyJobController extends Controller implements HasMiddleware
             new Middleware('can:create,App\Models\Job', ['create']),
             new Middleware('can:viewAnyEmployer,App\Models\Job', ['index']),
             new Middleware('can:update,my_job', ['edit', 'update']),
+            new Middleware('can:delete,my_job', ['destroy']),
         ];
     }
 

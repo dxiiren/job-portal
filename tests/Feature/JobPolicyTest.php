@@ -69,6 +69,8 @@ class JobPolicyTest extends TestCase
         $this->actingAs($otherEmployerUser)
             ->patch(route('my-jobs.update', $job), ['title' => 'Hijacked'])
             ->assertForbidden();
+
+        $this->assertNotSame('Hijacked', $job->fresh()->title);
     }
 
     public function test_user_cannot_apply_twice_to_the_same_job(): void
