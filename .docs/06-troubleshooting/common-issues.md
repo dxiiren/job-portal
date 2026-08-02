@@ -16,17 +16,17 @@ there is no registration UI to create a user.
 deterministic logins are `akmal@gmail.com` / `password` (job seeker) and
 `employer@gmail.com` / `password` (employer)). Note it DROPS existing local data.
 
-## `just lint` fails with style violations you didn't write
+## `just lint` fails with style violations you didn't write (fixed)
 
-**Symptom** — Pint exits 1 listing ~20 files (`app/Models/User.php`, both policies, the
-View components, all three 2025 migrations, `DatabaseSeeder`, `routes/web.php`, ...) with
-`ordered_imports`, `single_blank_line_at_eof`, `braces_position`, `yoda_style`, etc.
+**Symptom** — Pint used to exit 1 listing ~20 files (`app/Models/User.php`, both policies,
+the View components, all three 2025 migrations, `DatabaseSeeder`, `routes/web.php`, ...)
+with `ordered_imports`, `single_blank_line_at_eof`, `braces_position`, `yoda_style`, etc.
 
-**Cause** — pre-existing style debt in the app source; Pint has simply never been run here.
+**Cause** — pre-existing style debt; Pint had never been run on this repo.
 
-**Fix** — check only your files with
-`& "$env:LOCALAPPDATA\Programs\php-8.4\php.exe" vendor\bin\pint --test <path>`, or clean
-the whole repo once with `just lint-fix` in a dedicated `style:` commit.
+**Fixed** — Pint was applied repo-wide in a dedicated `style:` commit, so `just lint` is
+clean out of the box. If you reintroduce debt, check only your files by passing a path to
+`vendorin\pint --test`.
 
 ## `PHP 8.4 not found at ...` when running a recipe
 

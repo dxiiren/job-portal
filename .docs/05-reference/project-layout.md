@@ -68,7 +68,9 @@ job-portal/
       welcome.blade.php            # stock Laravel welcome (unused; / redirects to /jobs)
   routes/web.php                   # the whole route table
   storage/app/private/cvs/         # uploaded CVs land here (runtime, git-ignored)
-  tests/                           # stock Feature/Unit example tests
+  tests/                           # feature suite: auth, the three policies, ownership on
+                                   # both delete routes, soft deletes, employer middleware,
+                                   # scopeFilter, JobRequest validation, CV/salary, seeder
   justfile                         # dev recipes (see 05-reference/commands.md)
   setup.ps1                        # one-time machine setup
   .docs/                           # this documentation set

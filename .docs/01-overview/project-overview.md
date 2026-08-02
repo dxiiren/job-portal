@@ -51,8 +51,7 @@ soft-deleted listings.
 - No self-service user registration — sign in with a seeded account
   (`akmal@gmail.com` / `password` after `just fresh`).
 - No email, queues-in-use, or file download UI for uploaded CVs.
-- Test coverage is the stock Laravel example tests only (and see the known
-  [`ExampleTest` failure](../06-troubleshooting/common-issues.md)).
+- No CI — `just test` (74 feature tests) and `just lint` run locally are the whole gate.
 
 ## About the framework
 

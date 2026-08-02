@@ -32,7 +32,7 @@ Override the port for one run: `$env:PORT=8200; just start` (unset to return to 
 
 | Command | What it does |
 | --- | --- |
-| `just test` | `php artisan test` (PHPUnit); pass flags through: `just test --filter=ExampleTest` |
+| `just test` | `php artisan test` (PHPUnit, 74 tests); pass flags through: `just test --filter=JobPolicyTest` |
 | `just lint` | Pint style check, read-only (`vendor\bin\pint --test`) |
 | `just lint-fix` | Pint auto-fix (writes changes) |
 

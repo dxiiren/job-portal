@@ -63,12 +63,12 @@ PHP's dev server forks workers (`PHP_CLI_SERVER_WORKERS=4` in `.env`). All of th
 this repo's path on their command line, so `stop` finds and kills the whole family — and
 never touches another project's `php.exe`.
 
-### Why do `just test` and `just lint` fail on a clean clone?
+### Do `just test` and `just lint` pass on a clean clone?
 
-Both are pre-existing and documented: `ExampleTest` asserts 200 on `/` which is a 302
-redirect, and Pint has never been run on the app source. See
-[common-issues](../06-troubleshooting/common-issues.md) for the exact output and the
-deliberate-fix guidance.
+Yes, both. They used to fail (a stock `ExampleTest` asserted 200 on `/`, which is a 302
+redirect, and Pint had never been run on the app source); the example test was replaced by
+a real suite and Pint was applied repo-wide. Keep both green — they are the whole quality
+gate, there is no CI.
 
 ### What are the filter options on `/jobs`?
 

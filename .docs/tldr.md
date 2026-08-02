@@ -63,7 +63,7 @@ policies, styling, pages, seed shape).
 ## [06-troubleshooting/common-issues.md](06-troubleshooting/common-issues.md)
 
 Real symptom → cause → fix entries from the verification runs: empty `/jobs` (seed with
-`just fresh`), `just lint` failing on ~20 files of pre-existing Pint debt, missing PHP
+`just fresh`), the historical Pint debt (now cleared), missing PHP
 install, unstyled pages (no Vite manifest), port 8108 conflicts and the multi-worker
 `php.exe` shape, the historical tests-eating-seeded-data trap (phpunit DB overrides are
 active now), and the VC++/winget UAC hang the setup script already guards against.
