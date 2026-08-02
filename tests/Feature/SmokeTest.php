@@ -27,4 +27,16 @@ class SmokeTest extends TestCase
             ->assertOk()
             ->assertSee($job->title);
     }
+
+    public function test_a_guest_is_invited_to_sign_in_instead_of_told_they_already_applied(): void
+    {
+        $job = Job::factory()
+            ->for(Employer::factory()->for(User::factory()))
+            ->create();
+
+        $this->get(route('jobs.show', $job))
+            ->assertOk()
+            ->assertDontSee('You already applied to this job')
+            ->assertSee('Sign in to apply');
+    }
 }
