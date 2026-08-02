@@ -34,9 +34,10 @@
 - **Never edit a committed migration** — add a new one. Local resets are `just fresh`.
 - **`just fresh` wipes local data** — applications you created by hand are gone. Don't run
   it to "fix" an unrelated problem.
-- **Salary validation is length-based** — `expected_salary` (`StoreJobApplicationRequest`)
-  has `min:1|max:1000000` without `numeric`, so min/max validate string LENGTH. Known quirk;
-  fix deliberately, not as a drive-by.
+- **Salary validation is value-based (fixed)** — `expected_salary`
+  (`StoreJobApplicationRequest`) is `required|numeric|min:1|max:1000000`. It used to lack
+  `numeric`, so min/max validated string LENGTH; `JobApplicationSalaryValidationTest`
+  guards the fix — keep `numeric` in place.
 - **The suite is green — keep it green** — `just test` runs real feature tests (smoke,
   policies, CV validation, seeder demo accounts). A clean clone passes; a red suite means
   your change broke something.

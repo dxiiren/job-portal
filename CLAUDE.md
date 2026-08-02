@@ -28,7 +28,7 @@ applications can't be edited, and each user can apply to a job only once.
 | Uploads | Private `local` disk | CVs stored via `store('cvs', 'local')` → `storage/app/private/cvs/` (never public) |
 | Views | Blade components | `<x-layout>` shell + `<x-job-card>`, `<x-breadcrumbs>`, `<x-text-input>`, `<x-radio-group>`, `<x-tag>`, `<x-card>` |
 | Assets | Vite 6 + Tailwind CSS 4 + Alpine.js (npm) | `@vite` loads only when `public/build/manifest.json` exists (inline fallback otherwise) — `just bootstrap` builds once |
-| Tests | PHPUnit 11 via `php artisan test` | Green feature suite (smoke, `JobPolicyTest`, `JobApplicationCvTest`, `DatabaseSeederTest`); `phpunit.xml` overrides DB to sqlite `:memory:` — tests never touch the dev db |
+| Tests | PHPUnit 11 via `php artisan test` | Green feature suite (smoke, `JobPolicyTest`, `JobApplicationCvTest`, `JobApplicationSalaryValidationTest`, `DatabaseSeederTest`); `phpunit.xml` overrides DB to sqlite `:memory:` — tests never touch the dev db |
 | Style | Laravel Pint | `just lint` / `just lint-fix` |
 | Task runner | `just` | wraps php/composer/npm (`justfile`); PHP pinned to `%LOCALAPPDATA%\Programs\php-8.4` |
 
@@ -83,7 +83,7 @@ job-portal/
   DROPS all local data; never run it to "fix" something without asking.
 - The `Job` model maps to the **`offered_jobs`** table — the `jobs` table is Laravel's stock
   queue table. Mind this in raw SQL and new foreign keys.
-- `just test` is green out of the box (11 tests) and runs on sqlite `:memory:` — keep it
+- `just test` is green out of the box (15 tests) and runs on sqlite `:memory:` — keep it
   green; gate every change with it.
 - Never edit committed migrations, `config/database.php`, or `.env.example` defaults.
 

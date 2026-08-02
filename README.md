@@ -60,7 +60,7 @@ as the employer to post, edit and review applications on your own listings.
 
 ## Tests
 
-`just test` runs the PHPUnit feature suite (green — 11 tests / 32 assertions) against an
+`just test` runs the PHPUnit feature suite (green — 15 tests / 44 assertions) against an
 in-memory sqlite database (`phpunit.xml` overrides `DB_CONNECTION`/`DB_DATABASE`), so the
 seeded dev database is never touched. What's covered:
 
@@ -69,6 +69,7 @@ seeded dev database is never touched. What's covered:
 | `SmokeTest` | `/` redirects to the job listing, `/jobs` renders seeded jobs, guests get "Sign in to apply" (not "already applied") |
 | `JobPolicyTest` | An employer cannot edit a job once it has applications (403), cannot touch another employer's job, and a user cannot apply twice to the same job |
 | `JobApplicationCvTest` | CV uploads must be PDF and ≤ 2 MB — rejects `cv.exe` and oversized files with nothing stored; a valid PDF lands on the private `local` disk |
+| `JobApplicationSalaryValidationTest` | `expected_salary` is validated as a **value** (`numeric`, 1..1,000,000) — rejects `abc`, `0` and absurd amounts; in-range salaries save |
 | `DatabaseSeederTest` | The seeder always produces the two demo accounts above with their exact roles |
 
 ```powershell

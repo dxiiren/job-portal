@@ -22,7 +22,7 @@ class StoreJobApplicationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'expected_salary' => 'required|min:1|max:1000000',
+            'expected_salary' => 'required|numeric|min:1|max:1000000',
             'cv' => 'required|file|mimes:pdf|max:2048'
         ];
     }
