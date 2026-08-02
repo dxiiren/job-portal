@@ -29,7 +29,8 @@
    the database.
 6. A user-registration story — production can't seed its users.
 7. Removal of dev-only conveniences: the debugbar package auto-enables with
-   `APP_DEBUG=true`; seeded credentials must never ship.
+   `APP_DEBUG=true` (set `DEBUGBAR_ENABLED=false` in your local git-ignored `.env` to hide
+   it, e.g. when taking screenshots); seeded credentials must never ship.
 
 ## Related docs
 

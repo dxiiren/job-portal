@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Laravel</title>
+    <title>Job Portal</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -34,7 +34,7 @@
             @auth
                 <li>
                     <a href="{{ route('my-job-applications.index') }}">
-                        {{ Str::ucfirst( auth()->user()->name ?? 'Anynomus') }}s' Applications |
+                        My Applications |
                     </a>
                 </li>
                 <li>

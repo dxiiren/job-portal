@@ -30,7 +30,7 @@
                         );
                     @endphp
 
-                    <x-radio-group name="experience" :options="$experiences"/>,
+                    <x-radio-group name="experience" :options="$experiences"/>
 
                 </div>
                 <div>
